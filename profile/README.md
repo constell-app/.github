@@ -16,39 +16,7 @@ Constellは、散らばった知識（Web記事、メモ、アイデアなど）
 
 ## アーキテクチャ
 
-```plantuml
-@startuml Architecture
-
-!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
-
-title Constell Architecture
-
-Person(user, "ユーザー", "サービスを利用するユーザー")
-
-System_Boundary(constell, "Constell") {
-    Container(androidApp, "Androidアプリ", "Jetpack Compose", "ユーザーが利用するAndroidアプリ")
-
-    Boundary(supabase, "Supabase") {
-        Container(auth, "Auth", "Supabase", "認証・認可基盤")
-        Container(edgeFunctions, "Edge Functions", "Deno / TypeScript", "記事内容の要約・ベクトル化を行い保存する関数")
-        Container(postgrest, "PostgRESTサーバー", "PostgREST", "HTTPリクエストをSQLに変換し、DBとやりとりするサーバー")
-        ContainerDb(db, "DB", "PostgreSQL, pgvector", "データの保存、RLS、記事同士の類似度を計算・保存するトリガー関数")
-    }
-}
-
-System_Ext(geminiApi, "Gemini API", "記事の要約とベクトル化を行う外部API")
-
-Rel(user, androidApp, "利用する")
-Rel(androidApp, auth, "サインイン・サインアップ処理、セッション管理、パスワードリセット")
-Rel(androidApp, postgrest, "1. 記事の登録", "HTTP, REST API")
-Rel(postgrest, db, "2. 記事登録処理のSQLクエリ")
-Rel(db, edgeFunctions, "3. 記事の登録をトリガーに処理開始", "Database Webhooks")
-Rel(edgeFunctions, geminiApi, "4. 記事の要約とベクトル化", "HTTP, REST API")
-Rel(edgeFunctions, postgrest, "5. 要約・ベクトル化した記事を登録", "HTTP, REST API")
-Rel(postgrest, db, "6. 記事を登録するSQLクエリ")
-
-@enduml
-```
+![コンテナ図](https://www.plantuml.com/plantuml/png/bLLPJzjA57xthvYRfo11edilzpxqYR1qgQYKabHzH8uzIYmIsxB7RL65LDkKfKa5NHf0g4NGAAJGXgfBAnQ97pCO9_-YPsp7DIPLLHxCBETyttU-SqOPqGcl4QDIHXbDA4a42yJGCCVz9Sb2sH0nGYL2LFrAEgtnzrD5YPICWg5ZJL1aWcMI4fHAMYtpCeCOqebObWhfiU6XB3kwSsioNU5rWZKucXw335wIiPPI8PRZY4JA6C4f19JZz5ciwOgSP4o3A47j9hLFgFKDlWcsjxwolVs2MeVKUkuilNDVjgYvGQtgXT01ZilD0dnbUbGnP97NPfD2m0SeFUh407h88VWB5IPvMTGKISoeAiHb_0srTgYzHkqzfk0c9Yelp41AHLLqd8Y9f6OjAYgEm8Gnmb2LRgXyWTSnmEI2PQWgfimW9QO9_YMYqR3kx3tjjC2LOrWuAmVErf6xsG2goo1OBEAhXYmG2Io0p0dOe_20OOrZMK5fb9zLSKxG99Lu1AtriwEgi_3OQHzIizrfckwNUU2ZDXHvGEqbQkyxjJfqfBDTe-RysUbhvyEwRq6tldF-wcDVDM0WAMfO9q2HPUkfYLo-r-9LriVe1TjSp-UpO2CZjLem0q0DfBdRazJSTnhBvokRr5oZZypnKMh2_Jordi02lhwMA7O_HUE5f5XW9eo6p1e6z46a5k_1X2gQt-z5hz-dO8LVAJ1EJURW6nYrMdFUxiDjT_lDsSc9SzHaphIMtFOQc1OrX-bdvRm7m0j6pN5puGXFF2398gv8ifHH9U2_vgrH9dlZPs_2hh1o-tTbmMdKktQBfS4KJk5oyCWkZ7nqU26CHKNlWo5aFbeDQd_slr1Kv0H6tOPfTnQRxke2U4AjOtPYVQVsBWIuxUtWt7xcTV30Qyao-E17Wl0-pD5P-Jk5mghTZUDkxLDlDWOHcnHcJG0HIVCw-qylrS_pHG8CDDaVAf0HfBBu-7lvzn8pk1jj8ioXZzcjLvtTglUYUEAzL7GN5qgACgC7-37iQ8U7K-YtRRrSSd_Sg77_fT0ltowy6tFBPuMQ_j3M_rCebkgFKCnMRWJB8lm6_000)
 
 ---
 
